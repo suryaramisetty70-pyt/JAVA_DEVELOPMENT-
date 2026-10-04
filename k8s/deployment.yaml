@@ -1,0 +1,43 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: ecommerce-saga-service
+  labels:
+    app: ecommerce-saga
+spec:
+  replicas: 3
+  selector:
+    matchLabels:
+      app: ecommerce-saga
+  template:
+    metadata:
+      labels:
+        app: ecommerce-saga
+    spec:
+      containers:
+        - name: ecommerce-app
+          image: zaalima/ecommerce-saga:latest
+          ports:
+            - containerPort: 8081
+          env:
+            - name: SPRING_PROFILES_ACTIVE
+              value: "prod"
+          resources:
+            requests:
+              memory: "512Mi"
+              cpu: "250m"
+            limits:
+              memory: "1024Mi"
+              cpu: "1000m"
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: ecommerce-saga-service
+spec:
+  type: ClusterIP
+  selector:
+    app: ecommerce-saga
+  ports:
+    - port: 8081
+      targetPort: 8081
